@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagramme Construction Métallique — Light Edition</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+  :root {
+    --bg:        #eef1f7;
+    --surface:   #ffffff;
+    --surface2:  #f5f7fb;
+    --surface3:  #eceff7;
+    --border:    #d4d9e8;
+    --border2:   #c2c9dc;
+    --text:      #1c2034;
+    --text2:     #4a5272;
+    --text3:     #8892b0;
+
+    --purple:      #5b45e0;
+    --purple-mid:  #7b6df5;
+    --purple-bg:   #eeecfd;
+    --purple-bd:   #c4bdf7;
+
+    --teal:        #0f8a68;
+    --teal-mid:    #2db890;
+    --teal-bg:     #e6f7f2;
+    --teal-bd:     #9ddec8;
+
+    --amber:       #c06a10;
+    --amber-mid:   #e08030;
+    --amber-bg:    #fdf2e7;
+    --amber-bd:    #f0be88;
+
+    --coral:       #c43020;
+    --coral-mid:   #e05040;
+    --coral-bg:    #fdf0ee;
+    --coral-bd:    #f0a898;
+
+    --red:         #b01a60;
+    --red-mid:     #d84080;
+    --red-bg:      #fde8f2;
+    --red-bd:      #f0a8cc;
+
+    --green:       #1a7a40;
+    --green-mid:   #30a060;
+    --green-bg:    #e8f7ee;
+    --green-bd:    #90d8aa;
+
+    --flow:        #1a5fd4;
+    --flow-mid:    #3878f0;
+    --flow-bg:     #edf3fd;
+    --flow-bd:     #a0bef8;
+
+    --gray:        #6b7390;
+    --gray-light:  #9298aa;
+    --gray-bg:     #f0f2f6;
+    --gray-bd:     #c8ccd8;
+
+    --shadow-sm:   0 1px 3px rgba(28,32,52,0.08), 0 1px 2px rgba(28,32,52,0.05);
+    --shadow-md:   0 4px 12px rgba(28,32,52,0.10), 0 2px 4px rgba(28,32,52,0.06);
+    --shadow-card: 0 2px 8px rgba(28,32,52,0.09);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    line-height: 1.4;
+    min-height: 100vh;
+  }
+
+  .page {
+    width: 1560px;
+    min-height: 1080px;
+    margin: 0 auto;
+    padding: 36px 40px 40px;
+    position: relative;
+  }
+
+  /* ═══════════════════════════════ HEADER ═══════════════════════════════ */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 80px; height: 2px;
+    background: var(--purple);
+  }
+  .header-left h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: -0.8px;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .header-left h1 em { color: var(--purple); font-style: normal; }
+  .header-left p {
+    margin-top: 5px;
+    color: var(--text3);
+    font-size: 10px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .header-badges {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    font-family: 'Outfit', sans-serif;
+  }
+  .badge-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-bd); }
+  .badge-teal   { background: var(--teal-bg);   color: var(--teal);   border: 1px solid var(--teal-bd); }
+  .badge-amber  { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-bd); }
+  .badge-coral  { background: var(--coral-bg);  color: var(--coral);  border: 1px solid var(--coral-bd); }
+  .badge-red    { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-bd); }
+  .badge-green  { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-bd); }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 380px;
+    justify-content: flex-end;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 9px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* ═══════════════════════════════ USERS STRIP ═══════════════════════════════ */
+  .users-strip {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+  }
+  .users-strip::before {
+    content: 'UTILISATEURS & RESPONSABLES';
+    position: absolute;
+    top: 8px; left: 12px;
+    font-size: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--text3);
+  }
+  .user-card {
+    margin-top: 18px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    position: relative;
+    overflow: hidden;
+  }
+  .user-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+  }
+  .uc-purple::before { background: var(--purple); }
+  .uc-teal::before   { background: var(--teal); }
+  .uc-amber::before  { background: var(--amber); }
+  .uc-coral::before  { background: var(--coral); }
+  .uc-red::before    { background: var(--red); }
+  .uc-green::before  { background: var(--green); }
+  .user-role {
+    font-size: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .uc-purple .user-role { color: var(--purple); }
+  .uc-teal   .user-role { color: var(--teal); }
+  .uc-amber  .user-role { color: var(--amber); }
+  .uc-coral  .user-role { color: var(--coral); }
+  .uc-red    .user-role { color: var(--red); }
+  .uc-green  .user-role { color: var(--green); }
+  .user-class {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .user-attrs {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin-top: 2px;
+  }
+  .user-attr {
+    font-size: 8.5px;
+    color: var(--text3);
+  }
+  .user-perms {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    margin-top: 3px;
+  }
+  .perm {
+    font-size: 7.5px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 0.3px;
+  }
+  .perm-c { background: #e8f7ee; color: var(--green); border: 1px solid var(--green-bd); }
+  .perm-r { background: var(--flow-bg); color: var(--flow); border: 1px solid var(--flow-bd); }
+  .perm-u { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bd); }
+  .perm-d { background: var(--coral-bg); color: var(--coral); border: 1px solid var(--coral-bd); }
+
+  /* ═══════════════════════════════ MAIN GRID ═══════════════════════════════ */
+  .main {
+    display: grid;
+    grid-template-columns: 210px 1fr 210px 210px;
+    gap: 14px;
+    align-items: start;
+  }
+
+  /* ═══════════════════════════════ PHASE COLUMNS ═══════════════════════════════ */
+  .phase-col {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+  }
+  .phase-number {
+    font-family: 'Outfit', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    opacity: 0.3;
+  }
+  .phase-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  /* ═══════════════════════════════ UML CLASS CARDS ═══════════════════════════════ */
+  .uml-class {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+  }
+  .uml-class-header {
+    padding: 7px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .uml-class-stereotype {
+    font-size: 7.5px;
+    opacity: 0.6;
+    font-style: italic;
+    letter-spacing: 0.2px;
+  }
+  .uml-class-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1px;
+  }
+  .uml-divider { height: 1px; background: var(--border); }
+  .uml-section {
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--surface);
+  }
+  .uml-attr {
+    font-size: 9px;
+    color: var(--text2);
+    display: flex;
+    gap: 4px;
+  }
+  .uml-attr .sign { opacity: 0.4; }
+  .uml-method {
+    font-size: 9px;
+    font-style: italic;
+    display: flex;
+    gap: 4px;
+  }
+  .uml-method .sign { opacity: 0.4; }
+
+  /* Color Variants — Light */
+  .c-purple .uml-class-header { background: var(--purple-bg); border-bottom: 1px solid var(--purple-bd); }
+  .c-purple .uml-class-name   { color: var(--purple); }
+  .c-purple .uml-method       { color: var(--purple); }
+  .c-purple                   { border-color: var(--purple-bd) !important; }
+
+  .c-teal .uml-class-header { background: var(--teal-bg); border-bottom: 1px solid var(--teal-bd); }
+  .c-teal .uml-class-name   { color: var(--teal); }
+  .c-teal .uml-method       { color: var(--teal); }
+  .c-teal                   { border-color: var(--teal-bd) !important; }
+
+  .c-amber .uml-class-header { background: var(--amber-bg); border-bottom: 1px solid var(--amber-bd); }
+  .c-amber .uml-class-name   { color: var(--amber); }
+  .c-amber .uml-method       { color: var(--amber); }
+  .c-amber                   { border-color: var(--amber-bd) !important; }
+
+  .c-coral .uml-class-header { background: var(--coral-bg); border-bottom: 1px solid var(--coral-bd); }
+  .c-coral .uml-class-name   { color: var(--coral); }
+  .c-coral .uml-method       { color: var(--coral); }
+  .c-coral                   { border-color: var(--coral-bd) !important; }
+
+  .c-red .uml-class-header { background: var(--red-bg); border-bottom: 1px solid var(--red-bd); }
+  .c-red .uml-class-name   { color: var(--red); }
+  .c-red .uml-method       { color: var(--red); }
+  .c-red                   { border-color: var(--red-bd) !important; }
+
+  .c-green .uml-class-header { background: var(--green-bg); border-bottom: 1px solid var(--green-bd); }
+  .c-green .uml-class-name   { color: var(--green); }
+  .c-green .uml-method       { color: var(--green); }
+  .c-green                   { border-color: var(--green-bd) !important; }
+
+  .c-gray .uml-class-header { background: var(--gray-bg); border-bottom: 1px solid var(--gray-bd); }
+  .c-gray .uml-class-name   { color: var(--gray); }
+  .c-gray .uml-method       { color: var(--gray); }
+  .c-gray                   { border-color: var(--gray-bd) !important; }
+
+  /* ═══════════════════════════════ ENUM ═══════════════════════════════ */
+  .uml-enum {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+  .uml-enum-header {
+    padding: 5px 10px;
+    background: var(--gray-bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .uml-enum-header .stereotype { font-size: 7.5px; color: var(--text3); font-style: italic; }
+  .uml-enum-header .name { font-size: 10px; font-weight: 600; color: var(--gray); font-family: 'Outfit', sans-serif; }
+  .uml-enum-values { padding: 5px 10px; display: flex; flex-wrap: wrap; gap: 3px; }
+  .enum-val {
+    font-size: 7.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--surface2);
+    color: var(--text3);
+    border: 1px solid var(--border);
+  }
+
+  /* ═══════════════════════════════ SUBCLASS GROUP ═══════════════════════════════ */
+  .subclass-group {
+    border-left: 2px solid var(--border2);
+    padding-left: 8px;
+    margin-left: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .subclass-label {
+    font-size: 8px;
+    color: var(--text3);
+    font-style: italic;
+    margin-bottom: 1px;
+  }
+
+  /* ═══════════════════════════════ FLOW AREA ═══════════════════════════════ */
+  .flow-area {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .phase-zone {
+    padding: 12px 10px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+  }
+  .pz-be   { border-left: 3px solid var(--purple); }
+  .pz-prod { border-left: 3px solid var(--teal); }
+  .pz-liv  { border-left: 3px solid var(--coral); }
+  .pz-label {
+    font-size: 8px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 700;
+    padding-left: 4px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .pz-be .pz-label   { color: var(--purple); }
+  .pz-prod .pz-label { color: var(--teal); }
+  .pz-liv .pz-label  { color: var(--coral); }
+
+  /* FLOW NODES */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 5px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .flow-node {
+    padding: 6px 11px;
+    border-radius: 5px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    text-align: center;
+    position: relative;
+    white-space: nowrap;
+    box-shadow: var(--shadow-sm);
+    font-family: 'DM Mono', monospace;
+  }
+  .fn-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-bd); }
+  .fn-teal   { background: var(--teal-bg);   color: var(--teal);   border: 1px solid var(--teal-bd); }
+  .fn-amber  { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-bd); }
+  .fn-coral  { background: var(--coral-bg);  color: var(--coral);  border: 1px solid var(--coral-bd); }
+  .fn-red    { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-bd); }
+  .fn-green  { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-bd); }
+  .fn-blue   { background: var(--flow-bg);   color: var(--flow);   border: 1px solid var(--flow-bd); }
+  .fn-gray   { background: var(--gray-bg);   color: var(--gray);   border: 1px solid var(--gray-bd); }
+  .fn-start, .fn-end {
+    border-radius: 20px;
+    padding: 5px 18px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text3);
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .arrow-down {
+    display: flex;
+    justify-content: center;
+    color: var(--border2);
+    font-size: 16px;
+    margin: 2px 0;
+  }
+  .arrow-label {
+    font-size: 8px;
+    color: var(--text3);
+    text-align: center;
+    margin-top: -2px;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  /* CRUD BADGES on flow nodes */
+  .crud-row {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    margin-bottom: 3px;
+    flex-wrap: wrap;
+  }
+  .crud {
+    font-size: 7.5px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: default;
+  }
+  .crud-c { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-bd); }
+  .crud-r { background: var(--flow-bg);   color: var(--flow);   border: 1px solid var(--flow-bd); }
+  .crud-u { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-bd); }
+  .crud-d { background: var(--coral-bg);  color: var(--coral);  border: 1px solid var(--coral-bd); }
+
+  /* WORKER tag */
+  .worker-tag {
+    font-size: 7.5px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+  }
+  .worker-tag::before { content: '👷'; font-size: 8px; }
+
+  /* RESPONSIBLE tag */
+  .resp-tag {
+    font-size: 7.5px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+  }
+  .resp-tag::before { content: '👤'; font-size: 8px; }
+
+  /* DELAY / FAULT chips */
+  .delay-chip {
+    font-size: 7.5px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: var(--red-bg);
+    border: 1px solid var(--red-bd);
+    color: var(--red);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .delay-chip::before { content: '⚠'; font-size: 8px; }
+
+  /* ═══════════════════════════════ RELATIONS SUMMARY ═══════════════════════════════ */
+  .relations-box {
+    margin-top: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+  .rel-box-title {
+    font-size: 8px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+  }
+  .rel-tag {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 8px;
+    color: var(--text3);
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--surface2);
+    margin-bottom: 3px;
+  }
+  .rel-sym { font-size: 10px; color: var(--text2); }
+
+  /* ═══════════════════════════════ SECTION DIVIDER ═══════════════════════════════ */
+  .section-div {
+    height: 1px;
+    background: var(--border);
+    margin: 8px 0;
+  }
+
+  /* ═══════════════════════════════ FOOTER ═══════════════════════════════ */
+  .footer {
+    margin-top: 24px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-left { font-size: 9px; color: var(--text3); line-height: 1.5; }
+  .footer-legend { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .fl-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: var(--text3); }
+  .fl-box  { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* ═══════════════════════════════ PRINT ═══════════════════════════════ */
+  @media print {
+    body { background: white; }
+    .page { padding: 16px; width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="page" id="diagram-page">
+
+  <!-- ══════════════════════ HEADER ══════════════════════ -->
+  <div class="header">
+    <div class="header-left">
+      <h1>Construction <em>Métallique</em> — Diagramme Unifié <em></em></h1>
+      <p>Classe UML · Flux de processus · Responsables · Ouvriers · Alertes · CRUD — Charpentes &amp; Cabines Modulaires</p>
+      <div class="header-badges">
+        <span class="badge badge-purple">① Bureau d'étude</span>
+        <span class="badge badge-teal">② Production</span>
+        <span class="badge badge-amber">② Équipements</span>
+        <span class="badge badge-coral">③ Livraison</span>
+        <span class="badge badge-red">⚠ Alertes &amp; Fautes</span>
+        <span class="badge badge-green">👷 Ouvriers</span>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--purple-bg);border:1px solid var(--purple)"></div> Bureau d'étude</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--teal-bg);border:1px solid var(--teal)"></div> Production</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amber-bg);border:1px solid var(--amber)"></div> Équipements</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--coral-bg);border:1px solid var(--coral)"></div> Livraison</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red-bg);border:1px solid var(--red)"></div> Alertes</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green-bg);border:1px solid var(--green)"></div> Ouvriers</div>
+      <div class="legend-item">
+        <span class="crud crud-c">C</span>
+        <span class="crud crud-r">R</span>
+        <span class="crud crud-u">U</span>
+        <span class="crud crud-d">D</span>
+        <span style="font-size:9px">CRUD</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ USERS STRIP ══════════════════════ -->
+  <div class="users-strip">
+    <!-- Directeur -->
+    <div class="user-card uc-purple">
+      <div class="user-role">Directeur</div>
+      <div class="user-class">Utilisateur</div>
+      <div class="user-attrs">
+        <div class="user-attr">– idUser : UUID</div>
+        <div class="user-attr">– nom, prenom</div>
+        <div class="user-attr">– email, tel</div>
+        <div class="user-attr">– dateEmbauche : Date</div>
+      </div>
+      <div class="user-perms">
+        <span class="perm perm-c">Créer</span>
+        <span class="perm perm-r">Lire</span>
+        <span class="perm perm-u">Modif.</span>
+        <span class="perm perm-d">Suppr.</span>
+      </div>
+    </div>
+    <!-- Responsable BE -->
+    <div class="user-card uc-purple">
+      <div class="user-role">Resp. Bureau d'Étude</div>
+      <div class="user-class">ResponsableBE</div>
+      <div class="user-attrs">
+        <div class="user-attr">– specialite : String</div>
+        <div class="user-attr">– logicielCAO : List</div>
+        <div class="user-attr">– niveauHabilit.</div>
+        <div class="user-attr">+ validerPlan()</div>
+      </div>
+      <div class="user-perms">
+        <span class="perm perm-c">Plans</span>
+        <span class="perm perm-u">Modif.</span>
+        <span class="perm perm-r">Projets</span>
+      </div>
+    </div>
+    <!-- Chef Production -->
+    <div class="user-card uc-teal">
+      <div class="user-role">Chef de Production</div>
+      <div class="user-class">ChefProduction</div>
+      <div class="user-attrs">
+        <div class="user-attr">– secteur : String</div>
+        <div class="user-attr">– equipes : List</div>
+        <div class="user-attr">– capaciteProd : Float</div>
+        <div class="user-attr">+ lancerOF()</div>
+      </div>
+      <div class="user-perms">
+        <span class="perm perm-c">OF</span>
+        <span class="perm perm-u">Étapes</span>
+        <span class="perm perm-d">Tâches</span>
+      </div>
+    </div>
+    <!-- Chef Chantier -->
+    <div class="user-card uc-amber">
+      <div class="user-role">Chef de Chantier</div>
+      <div class="user-class">ChefChantier</div>
+      <div class="user-attrs">
+        <div class="user-attr">– chantier : String</div>
+        <div class="user-attr">– ouvriersAffecter</div>
+        <div class="user-attr">– certifications</div>
+        <div class="user-attr">+ signerPV()</div>
+      </div>
+      <div class="user-perms">
+        <span class="perm perm-r">Lecture</span>
+        <span class="perm perm-u">Affectat.</span>
+        <span class="perm perm-c">Rapports</span>
+      </div>
+    </div>
+    <!-- Resp. Livraison -->
+    <div class="user-card uc-coral">
+      <div class="user-role">Resp. Livraison</div>
+      <div class="user-class">ResponsableLivraison</div>
+      <div class="user-attrs">
+        <div class="user-attr">– flotte : List</div>
+        <div class="user-attr">– zones : List</div>
+        <div class="user-attr">– permisTransport</div>
+        <div class="user-attr">+ planifierLivr.()</div>
+      </div>
+      <div class="user-perms">
+        <span class="perm perm-c">BL</span>
+        <span class="perm perm-u">Transport</span>
+        <span class="perm perm-r">Projets</span>
+      </div>
+    </div>
+    <!-- Resp. Qualité -->
+    <div class="user-card uc-red">
+      <div class="user-role">Resp. Qualité / SAV</div>
+      <div class="user-class">InspecteurQualite</div>
+      <div class="user-attrs">
+        <div class="user-attr">– normes : List</div>
+        <div class="user-attr">– certifISO : String</div>
+        <div class="user-attr">– historiqueAudit</div>
+        <div class="user-attr">+ emettrePV()</div>
+      </div>
+      <div class="user-perms">
+        <span class="perm perm-c">Fautes</span>
+        <span class="perm perm-r">Toutes phases</span>
+        <span class="perm perm-u">Réserves</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ MAIN GRID ══════════════════════ -->
+  <div class="main">
+
+    <!-- ════ LEFT COL: Bureau d'étude + Production Classes ════ -->
+    <div class="phase-col">
+
+      <div class="phase-header" style="background:var(--purple-bg); border:1px solid var(--purple-bd);">
+        <span class="phase-number" style="color:var(--purple)">01</span>
+        <span class="phase-title" style="color:var(--purple)">Bureau d'Étude</span>
+      </div>
+
+      <div class="uml-class c-purple">
+        <div class="uml-class-header">
+          <span class="uml-class-stereotype">«entity»</span>
+          <span class="uml-class-name">Projet</span>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> idProjet : UUID</div>
+          <div class="uml-attr"><span class="sign">–</span> reference : String</div>
+          <div class="uml-attr"><span class="sign">–</span> typeProjet : TypeProjet</div>
+          <div class="uml-attr"><span class="sign">–</span> statut : StatutProjet</div>
+          <div class="uml-attr" style="color:var(--purple)"><span class="sign">–</span> responsableBE : ResponsableBE</div>
+          <div class="uml-attr" style="color:var(--red)"><span class="sign">–</span> alertes : List&lt;AlerteRetard&gt;</div>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-method"><span class="sign">+</span> validerPhase()</div>
+          <div class="uml-method"><span class="sign">+</span> genererOF()</div>
+          <div class="uml-method"><span class="sign">+</span> ajouterEtape()</div>
+          <div class="uml-method"><span class="sign">+</span> modifierEtape()</div>
+          <div class="uml-method"><span class="sign">+</span> supprimerEtape()</div>
+        </div>
+      </div>
+
+      <div class="uml-class c-purple">
+        <div class="uml-class-header">
+          <span class="uml-class-stereotype">«abstract»</span>
+          <span class="uml-class-name">Plan</span>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> idPlan : UUID</div>
+          <div class="uml-attr"><span class="sign">–</span> version : String</div>
+          <div class="uml-attr"><span class="sign">–</span> statut : StatutPlan</div>
+          <div class="uml-attr"><span class="sign">–</span> fichierCAO : URL</div>
+          <div class="uml-attr" style="color:var(--purple)"><span class="sign">–</span> creePar : ResponsableBE</div>
+          <div class="uml-attr" style="color:var(--purple)"><span class="sign">–</span> validePar : ResponsableBE</div>
+          <div class="uml-attr"><span class="sign">–</span> dateCreation : Date</div>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-method"><span class="sign">+</span> genererPDF()</div>
+          <div class="uml-method"><span class="sign">+</span> valider()</div>
+          <div class="uml-method"><span class="sign">+</span> reviser()</div>
+        </div>
+      </div>
+
+      <div class="subclass-group">
+        <div class="subclass-label">▷ hérite de Plan</div>
+        <div class="uml-class c-purple" style="opacity:0.92">
+          <div class="uml-class-header" style="padding:5px 8px;">
+            <span class="uml-class-name" style="font-size:10px">PlanCharpente</span>
+          </div>
+          <div class="uml-section" style="padding:4px 8px;">
+            <div class="uml-attr"><span class="sign">–</span> typeAcier, portee, charge</div>
+            <div class="uml-method"><span class="sign">+</span> calcStructure()</div>
+          </div>
+        </div>
+        <div class="uml-class c-purple" style="opacity:0.92">
+          <div class="uml-class-header" style="padding:5px 8px;">
+            <span class="uml-class-name" style="font-size:10px">PlanCabine</span>
+          </div>
+          <div class="uml-section" style="padding:4px 8px;">
+            <div class="uml-attr"><span class="sign">–</span> dimensions3D, panneaux</div>
+            <div class="uml-attr"><span class="sign">–</span> portes, fenêtres, équip.</div>
+            <div class="uml-method"><span class="sign">+</span> layoutInterieur()</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="uml-class c-purple" style="opacity:0.88">
+        <div class="uml-class-header">
+          <span class="uml-class-name">NoteDimensionnement</span>
+        </div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> normes, logicielCalc</div>
+          <div class="uml-attr"><span class="sign">–</span> hypotheses : Text</div>
+          <div class="uml-method"><span class="sign">+</span> exporterRapport()</div>
+        </div>
+      </div>
+
+      <div class="uml-class c-purple" style="opacity:0.88">
+        <div class="uml-class-header">
+          <span class="uml-class-stereotype">«entity»</span>
+          <span class="uml-class-name">BureauEtude</span>
+        </div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> idBE : UUID</div>
+          <div class="uml-attr"><span class="sign">–</span> responsable : ResponsableBE</div>
+          <div class="uml-attr"><span class="sign">–</span> techniciens : List</div>
+          <div class="uml-method"><span class="sign">+</span> affecterTechnicien()</div>
+          <div class="uml-method"><span class="sign">+</span> validerPlan()</div>
+        </div>
+      </div>
+
+      <div class="uml-enum">
+        <div class="uml-enum-header"><div class="stereotype">«enumeration»</div><div class="name">TypeProjet</div></div>
+        <div class="uml-enum-values">
+          <span class="enum-val">CHARPENTE</span>
+          <span class="enum-val">CABINE_MOD</span>
+          <span class="enum-val">MIXTE</span>
+        </div>
+      </div>
+      <div class="uml-enum">
+        <div class="uml-enum-header"><div class="stereotype">«enumeration»</div><div class="name">StatutPlan</div></div>
+        <div class="uml-enum-values">
+          <span class="enum-val">EN_COURS</span>
+          <span class="enum-val">SOUMIS</span>
+          <span class="enum-val">APPROUVE</span>
+          <span class="enum-val">REVISE</span>
+        </div>
+      </div>
+
+      <div class="section-div"></div>
+
+      <!-- PRODUCTION Classes -->
+      <div class="phase-header" style="background:var(--teal-bg); border:1px solid var(--teal-bd);">
+        <span class="phase-number" style="color:var(--teal)">02</span>
+        <span class="phase-title" style="color:var(--teal)">Production</span>
+      </div>
+
+      <div class="uml-class c-teal">
+        <div class="uml-class-header">
+          <span class="uml-class-name">OrdreFabrication</span>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> idOF : UUID</div>
+          <div class="uml-attr"><span class="sign">–</span> dateOuverture : Date</div>
+          <div class="uml-attr"><span class="sign">–</span> datePrevueFin : Date</div>
+          <div class="uml-attr"><span class="sign">–</span> priorite : Int</div>
+          <div class="uml-attr"><span class="sign">–</span> statut : StatutOF</div>
+          <div class="uml-attr" style="color:var(--teal)"><span class="sign">–</span> chefProd : ChefProduction</div>
+          <div class="uml-attr" style="color:var(--green)"><span class="sign">–</span> ouvriers : List&lt;Ouvrier&gt;</div>
+          <div class="uml-attr" style="color:var(--red)"><span class="sign">–</span> alertes : List&lt;AlerteRetard&gt;</div>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-method"><span class="sign">+</span> lancerFabrication()</div>
+          <div class="uml-method"><span class="sign">+</span> cloturerOF()</div>
+          <div class="uml-method"><span class="sign">+</span> ajouterEtape()</div>
+          <div class="uml-method"><span class="sign">+</span> modifierEtape()</div>
+          <div class="uml-method"><span class="sign">+</span> supprimerEtape()</div>
+        </div>
+      </div>
+
+      <div class="subclass-group">
+        <div class="subclass-label">▷ hérite d'OrdreFabrication</div>
+        <div class="uml-class c-teal" style="opacity:0.92">
+          <div class="uml-class-header" style="padding:5px 8px;">
+            <span class="uml-class-name" style="font-size:10px">FabricationCharpente</span>
+          </div>
+          <div class="uml-section" style="padding:4px 8px;">
+            <div class="uml-attr"><span class="sign">–</span> profil, longueur, soudure</div>
+            <div class="uml-attr" style="color:var(--green)"><span class="sign">–</span> soudeur, decoupeur : Ouvrier</div>
+            <div class="uml-method"><span class="sign">+</span> decouper() · souder()</div>
+            <div class="uml-method"><span class="sign">+</span> traiterSurface()</div>
+          </div>
+        </div>
+        <div class="uml-class c-teal" style="opacity:0.92">
+          <div class="uml-class-header" style="padding:5px 8px;">
+            <span class="uml-class-name" style="font-size:10px">FabricationCabine</span>
+          </div>
+          <div class="uml-section" style="padding:4px 8px;">
+            <div class="uml-attr"><span class="sign">–</span> panneaux sandwich, isol.</div>
+            <div class="uml-attr" style="color:var(--green)"><span class="sign">–</span> monteurs : List&lt;Ouvrier&gt;</div>
+            <div class="uml-method"><span class="sign">+</span> assembler() · poserPanneaux()</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="uml-class c-teal" style="opacity:0.88">
+        <div class="uml-class-header">
+          <span class="uml-class-name">LigneProduction</span>
+        </div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> nom, capacite : Float</div>
+          <div class="uml-attr"><span class="sign">–</span> typeOperation : String</div>
+          <div class="uml-attr" style="color:var(--green)"><span class="sign">–</span> operateurs : List&lt;Ouvrier&gt;</div>
+          <div class="uml-method"><span class="sign">+</span> planifierCharge()</div>
+        </div>
+      </div>
+
+      <div class="uml-enum">
+        <div class="uml-enum-header"><div class="stereotype">«enumeration»</div><div class="name">StatutOF</div></div>
+        <div class="uml-enum-values">
+          <span class="enum-val">PLANIFIE</span>
+          <span class="enum-val">EN_COURS</span>
+          <span class="enum-val">SUSPENDU</span>
+          <span class="enum-val">RETARD</span>
+          <span class="enum-val">TERMINE</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ════ CENTER COL: FLUX avec CRUD + Responsables + Ouvriers ════ -->
+    <div class="flow-area">
+
+      <!-- PHASE BE -->
+      <div class="phase-zone pz-be">
+        <div class="pz-label">① Bureau d'Étude — Conception &amp; Plans</div>
+
+        <div class="flow-row">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div class="flow-node fn-blue fn-start">NOUVELLE COMMANDE</div>
+            <div class="resp-tag">Directeur</div>
+          </div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="crud-row">
+          <span class="crud crud-c">+ Créer</span>
+          <span class="crud crud-r">👁 Lire</span>
+          <span class="crud crud-u">✏ Modifier</span>
+          <span class="crud crud-d">🗑 Supprimer</span>
+        </div>
+        <div class="flow-row">
+          <div class="flow-node fn-purple">Création Projet</div>
+          <div class="flow-arrow">→</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div class="flow-node fn-purple">Affectation BureauEtude</div>
+            <div class="resp-tag">Resp. Bureau d'Étude</div>
+          </div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="crud-row">
+          <span class="crud crud-c">+ Plan</span>
+          <span class="crud crud-u">✏ Réviser</span>
+          <span class="crud crud-d">🗑 Annuler</span>
+        </div>
+        <div class="flow-row">
+          <div class="flow-node fn-purple">Élaboration Plans CAO</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-purple">NoteDimensionnement</div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="flow-row">
+          <div class="flow-node fn-gray" style="border-color:var(--purple);background:var(--purple-bg);color:var(--purple);padding:5px 9px;border-radius:4px;">⬦ Type Projet ?</div>
+        </div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-row">
+          <div class="flow-node fn-purple" style="font-size:8px;">CHARPENTE<br>→ PlanCharpente</div>
+          <div style="width:16px;text-align:center;color:var(--border2)">│</div>
+          <div class="flow-node fn-purple" style="font-size:8px;">CABINE<br>→ PlanCabine</div>
+          <div style="width:16px;text-align:center;color:var(--border2)">│</div>
+          <div class="flow-node fn-purple" style="font-size:8px;">MIXTE<br>→ Les deux</div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="flow-row">
+          <div class="flow-node fn-gray" style="border-color:var(--purple);background:var(--purple-bg);color:var(--purple);padding:5px 9px;border-radius:4px;">⬦ Délai respecté ?</div>
+        </div>
+        <div class="flow-row">
+          <div class="delay-chip">NON → AlerteRetard(BE)</div>
+          <div style="width:14px;text-align:center;color:var(--border2)">│</div>
+          <div class="flow-node fn-purple" style="font-size:8px;">OUI → continue</div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="crud-row">
+          <span class="crud crud-r">👁 Vérifier</span>
+          <span class="crud crud-u">✏ Corriger</span>
+        </div>
+        <div class="flow-row">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div class="flow-node fn-purple">Validation Plans<br><span style="font-size:7.5px;opacity:0.7">StatutPlan → APPROUVE</span></div>
+            <div class="resp-tag">Resp. Bureau d'Étude</div>
+          </div>
+        </div>
+
+        <!-- Faute BE -->
+        <div style="margin-top:6px;padding:5px 8px;border:1px dashed var(--red-bd);border-radius:5px;background:var(--red-bg);">
+          <div style="font-size:7.5px;color:var(--red);font-family:'Outfit',sans-serif;font-weight:700;margin-bottom:3px;">⚠ Signalement faute — Phase BE</div>
+          <div style="font-size:8px;color:var(--text3)">Erreur plan · mauvais calcul · non-conformité normes</div>
+          <div style="font-size:8px;color:var(--red);margin-top:2px">→ SignalementFaute.statut = OUVERT → correction</div>
+        </div>
+      </div>
+
+      <div class="arrow-down" style="color:var(--teal);font-size:18px;">↓</div>
+      <div class="arrow-label" style="color:var(--teal)">génère OrdreFabrication</div>
+
+      <!-- PHASE PRODUCTION -->
+      <div class="phase-zone pz-prod">
+        <div class="pz-label">② Production — Fabrication &amp; Assemblage</div>
+
+        <div class="crud-row">
+          <span class="crud crud-c">+ OF</span>
+          <span class="crud crud-r">👁 Suivi</span>
+          <span class="crud crud-u">✏ Modifier OF</span>
+          <span class="crud crud-d">🗑 Annuler étape</span>
+        </div>
+        <div class="flow-row">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div class="flow-node fn-teal">Ouverture OF<br><span style="font-size:7.5px;opacity:0.7">StatutOF → PLANIFIE</span></div>
+            <div class="resp-tag">Chef de Production</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-teal">Planification<br>LigneProduction</div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="flow-row">
+          <div class="worker-tag">Affectation Ouvriers</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-node fn-gray" style="border-color:var(--teal);background:var(--teal-bg);color:var(--teal);padding:5px 9px;border-radius:4px;">⬦ Type Fabrication ?</div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <!-- Branches Charpente / Cabine -->
+        <div class="flow-row" style="align-items:flex-start;gap:8px">
+          <div style="display:flex;flex-direction:column;gap:3px;align-items:center;flex:1">
+            <div class="flow-node fn-teal" style="font-size:8px;width:100%">Découpe profilés</div>
+            <div class="worker-tag" style="font-size:7px">👷 Découpeur</div>
+            <div class="flow-node fn-teal" style="font-size:8px;width:100%">Assemblage / Soudage</div>
+            <div class="worker-tag" style="font-size:7px">👷 Soudeur</div>
+            <div class="flow-node fn-teal" style="font-size:8px;width:100%">Traitement surface</div>
+            <div class="worker-tag" style="font-size:7px">👷 Peintres</div>
+            <div style="font-size:8px;color:var(--text3);font-style:italic">FabCharpente</div>
+          </div>
+          <div style="display:flex;align-items:center;color:var(--border2);font-size:16px;padding-top:20px">│</div>
+          <div style="display:flex;flex-direction:column;gap:3px;align-items:center;flex:1">
+            <div class="flow-node fn-teal" style="font-size:8px;width:100%">Structure métallique</div>
+            <div class="worker-tag" style="font-size:7px">👷 Monteurs</div>
+            <div class="flow-node fn-amber" style="font-size:8px;width:100%">Panneaux sandwich</div>
+            <div class="worker-tag" style="font-size:7px">👷 Bardeurs</div>
+            <div class="flow-node fn-amber" style="font-size:8px;width:100%">Portes / Fenêtres</div>
+            <div class="worker-tag" style="font-size:7px">👷 Menuisiers</div>
+            <div class="flow-node fn-amber" style="font-size:8px;width:100%">Équipements</div>
+            <div class="worker-tag" style="font-size:7px">👷 Électriciens / Plombiers</div>
+            <div style="font-size:8px;color:var(--text3);font-style:italic">FabCabine</div>
+          </div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="flow-row">
+          <div class="flow-node fn-gray" style="border-color:var(--teal);background:var(--teal-bg);color:var(--teal);padding:5px 9px;border-radius:4px;">⬦ Délai respecté ?</div>
+        </div>
+        <div class="flow-row">
+          <div class="delay-chip">NON → AlerteRetard(PROD)</div>
+          <div style="width:12px;text-align:center;color:var(--border2)">│</div>
+          <div class="flow-node fn-teal" style="font-size:8px;">OUI → continue</div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="crud-row">
+          <span class="crud crud-c">+ PV</span>
+          <span class="crud crud-r">👁 Inspecter</span>
+          <span class="crud crud-u">✏ Observations</span>
+        </div>
+        <div class="flow-row">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div class="flow-node fn-coral">Contrôle Qualité<br><span style="font-size:7.5px;opacity:0.7">ControleQualite.emettrePV()</span></div>
+            <div class="resp-tag">Resp. Qualité</div>
+          </div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="flow-row">
+          <div class="flow-node fn-gray" style="border-color:var(--coral);background:var(--coral-bg);color:var(--coral);padding:5px 9px;border-radius:4px;">⬦ Conforme ?</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-node fn-coral" style="font-size:8px">NON → Retouche ↺<br><span style="font-size:7px">SignalementFaute(PROD)</span></div>
+          <div style="width:14px;text-align:center;color:var(--border2)">│</div>
+          <div class="flow-node fn-teal" style="font-size:8px">OUI → StatutOF: TERMINE</div>
+        </div>
+
+        <!-- Faute Prod -->
+        <div style="margin-top:6px;padding:5px 8px;border:1px dashed var(--red-bd);border-radius:5px;background:var(--red-bg);">
+          <div style="font-size:7.5px;color:var(--red);font-family:'Outfit',sans-serif;font-weight:700;margin-bottom:3px;">⚠ Signalement faute — Phase Production</div>
+          <div style="font-size:8px;color:var(--text3)">Défaut soudure · mauvais assemblage · non-conformité</div>
+          <div style="font-size:8px;color:var(--red);margin-top:2px">→ Ouvrier(s) identifié(s) · retouche obligatoire</div>
+        </div>
+      </div>
+
+      <div class="arrow-down" style="color:var(--coral);font-size:18px;">↓</div>
+      <div class="arrow-label" style="color:var(--coral)">déclenche bon de livraison</div>
+
+      <!-- PHASE LIVRAISON -->
+      <div class="phase-zone pz-liv">
+        <div class="pz-label">③ Livraison — Transport &amp; Réception Chantier</div>
+
+        <div class="crud-row">
+          <span class="crud crud-c">+ BL</span>
+          <span class="crud crud-r">👁 Suivre</span>
+          <span class="crud crud-u">✏ Modifier BL</span>
+          <span class="crud crud-d">🗑 Annuler</span>
+        </div>
+        <div class="flow-row">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div class="flow-node fn-coral">Création BonLivraison<br><span style="font-size:7.5px;opacity:0.7">StatutLivraison → PLANIFIEE</span></div>
+            <div class="resp-tag">Resp. Livraison</div>
+          </div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="flow-row">
+          <div class="flow-node fn-gray" style="border-color:var(--coral);background:var(--coral-bg);color:var(--coral);padding:5px 9px;border-radius:4px;">⬦ Délai livraison ?</div>
+        </div>
+        <div class="flow-row">
+          <div class="delay-chip">NON → AlerteRetard(LIV)</div>
+          <div style="width:12px;text-align:center;color:var(--border2)">│</div>
+          <div class="flow-node fn-coral" style="font-size:8px;">OUI → continue</div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="flow-row">
+          <div class="flow-node fn-coral">Préparation Transport<br><span style="font-size:7.5px;opacity:0.7">véhicule, chauffeur, itinéraire</span></div>
+          <div class="flow-arrow">→</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div class="flow-node fn-coral">Départ chantier<br><span style="font-size:7.5px;opacity:0.7">→ EN_TRANSIT · suivreGPS()</span></div>
+            <div class="worker-tag">👷 Chauffeur</div>
+          </div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="crud-row">
+          <span class="crud crud-c">+ Réception</span>
+          <span class="crud crud-u">✏ Réserves</span>
+          <span class="crud crud-r">👁 PV</span>
+        </div>
+        <div class="flow-row">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div class="flow-node fn-coral">Réception Chantier<br><span style="font-size:7.5px;opacity:0.7">représentant signe le BL</span></div>
+            <div class="resp-tag">Chef de Chantier</div>
+          </div>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="flow-row">
+          <div class="flow-node fn-gray" style="border-color:var(--coral);background:var(--coral-bg);color:var(--coral);padding:5px 9px;border-radius:4px;">⬦ Réserves / Fautes ?</div>
+        </div>
+        <div class="flow-row">
+          <div style="display:flex;flex-direction:column;gap:2px;align-items:center">
+            <div class="flow-node fn-coral" style="font-size:8px">OUI → leverReserves() ↺</div>
+            <div style="font-size:7.5px;color:var(--red)">SignalementFaute(POST-LIV)</div>
+          </div>
+          <div style="width:14px;text-align:center;color:var(--border2)">│</div>
+          <div class="flow-node fn-blue fn-start" style="font-size:9px">PROJET CLÔTURÉ ✓</div>
+        </div>
+
+        <!-- Faute Post-Livraison -->
+        <div style="margin-top:6px;padding:5px 8px;border:1px dashed var(--red-bd);border-radius:5px;background:var(--red-bg);">
+          <div style="font-size:7.5px;color:var(--red);font-family:'Outfit',sans-serif;font-weight:700;margin-bottom:3px;">⚠ Faute post-livraison / SAV</div>
+          <div style="font-size:8px;color:var(--text3)">Défaut visible · pièce manquante · non-conformité</div>
+          <div style="font-size:8px;color:var(--red);margin-top:2px">→ Resp. Qualité · ouvriers concernés identifiés</div>
+        </div>
+      </div>
+
+    </div><!-- end flow-area -->
+
+    <!-- ════ RIGHT COL A: Équipements + Livraison Classes ════ -->
+    <div class="phase-col">
+
+      <div class="phase-header" style="background:var(--amber-bg); border:1px solid var(--amber-bd); padding:4px 0; border:none;">
+        <span class="phase-number" style="color:var(--amber)">02b</span>
+        <span class="phase-title" style="color:var(--amber)">Équipements</span>
+      </div>
+
+      <div class="uml-class c-amber">
+        <div class="uml-class-header">
+          <span class="uml-class-stereotype">«abstract»</span>
+          <span class="uml-class-name">Equipement</span>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> idEquip : UUID</div>
+          <div class="uml-attr"><span class="sign">–</span> marque, reference</div>
+          <div class="uml-attr"><span class="sign">–</span> categorie : CatEquip</div>
+          <div class="uml-attr" style="color:var(--green)"><span class="sign">–</span> posePar : Ouvrier</div>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-method"><span class="sign">+</span> installer()</div>
+        </div>
+      </div>
+
+      <div class="subclass-group">
+        <div class="subclass-label">▷ hérite d'Equipement</div>
+        <div class="uml-class c-amber" style="opacity:0.92">
+          <div class="uml-class-header" style="padding:5px 8px;">
+            <span class="uml-class-name" style="font-size:10px">EquipSanitaire</span>
+          </div>
+          <div class="uml-section" style="padding:4px 8px;">
+            <div class="uml-attr"><span class="sign">–</span> typeSanitaire : String</div>
+            <div class="uml-attr"><span class="sign">–</span> branchementEau : Bool</div>
+            <div class="uml-attr" style="color:var(--green)"><span class="sign">–</span> plombier : Ouvrier</div>
+            <div class="uml-method"><span class="sign">+</span> raccorder()</div>
+          </div>
+        </div>
+        <div class="uml-class c-amber" style="opacity:0.92">
+          <div class="uml-class-header" style="padding:5px 8px;">
+            <span class="uml-class-name" style="font-size:10px">EquipElectrique</span>
+          </div>
+          <div class="uml-section" style="padding:4px 8px;">
+            <div class="uml-attr"><span class="sign">–</span> puissance, tension</div>
+            <div class="uml-attr"><span class="sign">–</span> norme : String</div>
+            <div class="uml-attr" style="color:var(--green)"><span class="sign">–</span> electricien : Ouvrier</div>
+            <div class="uml-method"><span class="sign">+</span> cabler()</div>
+          </div>
+        </div>
+        <div class="uml-class c-amber" style="opacity:0.92">
+          <div class="uml-class-header" style="padding:5px 8px;">
+            <span class="uml-class-name" style="font-size:10px">Mobilier</span>
+          </div>
+          <div class="uml-section" style="padding:4px 8px;">
+            <div class="uml-attr"><span class="sign">–</span> typeMobilier, couleur</div>
+            <div class="uml-attr"><span class="sign">–</span> dimensions : String</div>
+            <div class="uml-attr" style="color:var(--green)"><span class="sign">–</span> poseur : Ouvrier</div>
+            <div class="uml-method"><span class="sign">+</span> poser()</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="uml-class c-amber" style="opacity:0.88">
+        <div class="uml-class-header">
+          <span class="uml-class-name">Menuiserie</span>
+        </div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> type : TypeMenuiserie</div>
+          <div class="uml-attr"><span class="sign">–</span> largeur, hauteur : Float</div>
+          <div class="uml-attr" style="color:var(--green)"><span class="sign">–</span> menuisier : Ouvrier</div>
+          <div class="uml-method"><span class="sign">+</span> poser()</div>
+        </div>
+      </div>
+
+      <div class="uml-enum">
+        <div class="uml-enum-header"><div class="stereotype">«enumeration»</div><div class="name">TypeMenuiserie</div></div>
+        <div class="uml-enum-values">
+          <span class="enum-val">PORTE_ACIER</span>
+          <span class="enum-val">PORTE_ALU</span>
+          <span class="enum-val">FEN_SIMPLE</span>
+          <span class="enum-val">FEN_DOUBLE</span>
+        </div>
+      </div>
+
+      <div class="section-div"></div>
+
+      <div style="padding:4px 0;">
+        <span class="phase-number" style="color:var(--coral);font-family:'Outfit',sans-serif;font-weight:900;font-size:20px;opacity:0.3">03</span>
+        <span class="phase-title" style="color:var(--coral);font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase"> Livraison</span>
+      </div>
+
+      <div class="uml-class c-coral">
+        <div class="uml-class-header">
+          <span class="uml-class-name">BonLivraison</span>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> idBL : UUID</div>
+          <div class="uml-attr"><span class="sign">–</span> dateLivraison : Date</div>
+          <div class="uml-attr"><span class="sign">–</span> adresseChantier : String</div>
+          <div class="uml-attr"><span class="sign">–</span> statut : StatutLivraison</div>
+          <div class="uml-attr" style="color:var(--coral)"><span class="sign">–</span> respLivraison : ResponsableLivraison</div>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-method"><span class="sign">+</span> signer()</div>
+          <div class="uml-method"><span class="sign">+</span> archiver()</div>
+        </div>
+      </div>
+
+      <div class="uml-class c-coral">
+        <div class="uml-class-header">
+          <span class="uml-class-name">Transport</span>
+        </div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> vehicule, immatriculation</div>
+          <div class="uml-attr"><span class="sign">–</span> poidsCharge : Float</div>
+          <div class="uml-attr" style="color:var(--green)"><span class="sign">–</span> chauffeur : Ouvrier</div>
+          <div class="uml-method"><span class="sign">+</span> suivreGPS()</div>
+        </div>
+      </div>
+
+      <div class="uml-class c-coral">
+        <div class="uml-class-header">
+          <span class="uml-class-name">ReceptionChantier</span>
+        </div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> dateReception : Date</div>
+          <div class="uml-attr"><span class="sign">–</span> representant : String</div>
+          <div class="uml-attr"><span class="sign">–</span> reserves : List&lt;String&gt;</div>
+          <div class="uml-attr"><span class="sign">–</span> pvsigne : Bool</div>
+          <div class="uml-attr" style="color:var(--coral)"><span class="sign">–</span> chefChantier : ChefChantier</div>
+          <div class="uml-method"><span class="sign">+</span> leverReserves()</div>
+        </div>
+      </div>
+
+      <div class="uml-class c-coral">
+        <div class="uml-class-header">
+          <span class="uml-class-name">ControleQualite</span>
+        </div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> conformite : Bool</div>
+          <div class="uml-attr"><span class="sign">–</span> observations : Text</div>
+          <div class="uml-attr" style="color:var(--red)"><span class="sign">–</span> inspecteur : InspecteurQualite</div>
+          <div class="uml-method"><span class="sign">+</span> emettrePV()</div>
+        </div>
+      </div>
+
+      <div class="uml-enum">
+        <div class="uml-enum-header"><div class="stereotype">«enumeration»</div><div class="name">StatutLivraison</div></div>
+        <div class="uml-enum-values">
+          <span class="enum-val">PLANIFIEE</span>
+          <span class="enum-val">EN_TRANSIT</span>
+          <span class="enum-val">LIVREE</span>
+          <span class="enum-val">RECEPTIONNEE</span>
+          <span class="enum-val">EN_RETARD</span>
+        </div>
+      </div>
+
+    </div><!-- end right col A -->
+
+    <!-- ════ RIGHT COL B: Ouvriers + Alertes + CRUD ════ -->
+    <div class="phase-col">
+
+      <!-- OUVRIERS -->
+      <div class="phase-header" style="background:var(--green-bg); border:1px solid var(--green-bd);">
+        <span class="phase-number" style="color:var(--green)">👷</span>
+        <span class="phase-title" style="color:var(--green)">Ouvriers</span>
+      </div>
+
+      <div class="uml-class c-green">
+        <div class="uml-class-header">
+          <span class="uml-class-stereotype">«entity»</span>
+          <span class="uml-class-name">Ouvrier</span>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> idOuvrier : UUID</div>
+          <div class="uml-attr"><span class="sign">–</span> nom, prenom</div>
+          <div class="uml-attr"><span class="sign">–</span> matricule : String</div>
+          <div class="uml-attr"><span class="sign">–</span> specialite : Specialite</div>
+          <div class="uml-attr"><span class="sign">–</span> equipe : String</div>
+          <div class="uml-attr"><span class="sign">–</span> dateEntree : Date</div>
+          <div class="uml-attr"><span class="sign">–</span> certifications : List</div>
+          <div class="uml-attr"><span class="sign">–</span> statut : StatutOuvrier</div>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-method"><span class="sign">+</span> affecter(tache)</div>
+          <div class="uml-method"><span class="sign">+</span> desaffecter(tache)</div>
+          <div class="uml-method"><span class="sign">+</span> getHistorique()</div>
+        </div>
+      </div>
+
+      <div class="uml-class c-green" style="opacity:0.9">
+        <div class="uml-class-header">
+          <span class="uml-class-name">AffectationTache</span>
+        </div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> idAffect : UUID</div>
+          <div class="uml-attr"><span class="sign">–</span> ouvrier : Ouvrier</div>
+          <div class="uml-attr"><span class="sign">–</span> tache : String</div>
+          <div class="uml-attr"><span class="sign">–</span> phase : PhaseEnum</div>
+          <div class="uml-attr"><span class="sign">–</span> dateDebut : Date</div>
+          <div class="uml-attr"><span class="sign">–</span> dateFin : Date</div>
+          <div class="uml-attr"><span class="sign">–</span> statut : StatutTache</div>
+          <div class="uml-method"><span class="sign">+</span> demarrer()</div>
+          <div class="uml-method"><span class="sign">+</span> terminer()</div>
+          <div class="uml-method"><span class="sign">+</span> signaler()</div>
+        </div>
+      </div>
+
+      <div class="uml-enum">
+        <div class="uml-enum-header"><div class="stereotype">«enumeration»</div><div class="name">Specialite</div></div>
+        <div class="uml-enum-values">
+          <span class="enum-val">SOUDEUR</span>
+          <span class="enum-val">DECOUPEUR</span>
+          <span class="enum-val">MONTEUR</span>
+          <span class="enum-val">BARDEUR</span>
+          <span class="enum-val">MENUISIER</span>
+          <span class="enum-val">ELECTRICIEN</span>
+          <span class="enum-val">PLOMBIER</span>
+          <span class="enum-val">PEINTRE</span>
+          <span class="enum-val">CHAUFFEUR</span>
+        </div>
+      </div>
+
+      <div class="uml-enum">
+        <div class="uml-enum-header"><div class="stereotype">«enumeration»</div><div class="name">StatutTache</div></div>
+        <div class="uml-enum-values">
+          <span class="enum-val">EN_ATTENTE</span>
+          <span class="enum-val">EN_COURS</span>
+          <span class="enum-val">TERMINEE</span>
+          <span class="enum-val">BLOQUEE</span>
+        </div>
+      </div>
+
+      <div class="section-div"></div>
+
+      <!-- ALERTES & FAUTES -->
+      <div class="phase-header" style="background:var(--red-bg); border:1px solid var(--red-bd);">
+        <span class="phase-number" style="color:var(--red)">⚠</span>
+        <span class="phase-title" style="color:var(--red)">Alertes &amp; Fautes</span>
+      </div>
+
+      <div class="uml-class c-red">
+        <div class="uml-class-header">
+          <span class="uml-class-stereotype">«entity»</span>
+          <span class="uml-class-name">AlerteRetard</span>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> idAlerte : UUID</div>
+          <div class="uml-attr"><span class="sign">–</span> phase : PhaseEnum</div>
+          <div class="uml-attr"><span class="sign">–</span> dateDebutPrevue : Date</div>
+          <div class="uml-attr"><span class="sign">–</span> dateDebutReelle : Date</div>
+          <div class="uml-attr"><span class="sign">–</span> joursRetard : Int</div>
+          <div class="uml-attr"><span class="sign">–</span> cause : String</div>
+          <div class="uml-attr"><span class="sign">–</span> responsable : Utilisateur</div>
+          <div class="uml-attr"><span class="sign">–</span> statut : StatutAlerte</div>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-method"><span class="sign">+</span> declencherAlerte()</div>
+          <div class="uml-method"><span class="sign">+</span> notifierResponsable()</div>
+          <div class="uml-method"><span class="sign">+</span> cloturer()</div>
+        </div>
+      </div>
+
+      <div class="uml-class c-red">
+        <div class="uml-class-header">
+          <span class="uml-class-stereotype">«entity»</span>
+          <span class="uml-class-name">SignalementFaute</span>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-attr"><span class="sign">–</span> idSignalement : UUID</div>
+          <div class="uml-attr"><span class="sign">–</span> phase : PhaseEnum</div>
+          <div class="uml-attr"><span class="sign">–</span> etape : String</div>
+          <div class="uml-attr"><span class="sign">–</span> description : Text</div>
+          <div class="uml-attr"><span class="sign">–</span> gravite : Gravite</div>
+          <div class="uml-attr"><span class="sign">–</span> dateSignalement : Date</div>
+          <div class="uml-attr"><span class="sign">–</span> signalePar : Utilisateur</div>
+          <div class="uml-attr" style="color:var(--green)"><span class="sign">–</span> ouvriersImpl. : List&lt;Ouvrier&gt;</div>
+          <div class="uml-attr"><span class="sign">–</span> statut : StatutFaute</div>
+          <div class="uml-attr"><span class="sign">–</span> actionCorrective : Text</div>
+          <div class="uml-attr"><span class="sign">–</span> dateCloture : Date</div>
+        </div>
+        <div class="uml-divider"></div>
+        <div class="uml-section">
+          <div class="uml-method"><span class="sign">+</span> ouvrir()</div>
+          <div class="uml-method"><span class="sign">+</span> assignerCorrection()</div>
+          <div class="uml-method"><span class="sign">+</span> validerCorrection()</div>
+          <div class="uml-method"><span class="sign">+</span> cloturer()</div>
+        </div>
+      </div>
+
+      <div class="uml-enum">
+        <div class="uml-enum-header"><div class="stereotype">«enumeration»</div><div class="name">PhaseEnum</div></div>
+        <div class="uml-enum-values">
+          <span class="enum-val">BUREAU_ETUDE</span>
+          <span class="enum-val">PRODUCTION</span>
+          <span class="enum-val">LIVRAISON</span>
+          <span class="enum-val">POST_LIVRAISON</span>
+        </div>
+      </div>
+
+      <div class="uml-enum">
+        <div class="uml-enum-header"><div class="stereotype">«enumeration»</div><div class="name">Gravite</div></div>
+        <div class="uml-enum-values">
+          <span class="enum-val">MINEURE</span>
+          <span class="enum-val">MODEREE</span>
+          <span class="enum-val">MAJEURE</span>
+          <span class="enum-val">CRITIQUE</span>
+        </div>
+      </div>
+
+      <div class="uml-enum">
+        <div class="uml-enum-header"><div class="stereotype">«enumeration»</div><div class="name">StatutFaute</div></div>
+        <div class="uml-enum-values">
+          <span class="enum-val">OUVERT</span>
+          <span class="enum-val">EN_COURS</span>
+          <span class="enum-val">CORRIGE</span>
+          <span class="enum-val">CLOTURE</span>
+        </div>
+      </div>
+
+      <!-- CRUD REFERENCE BOX -->
+      <div class="relations-box" style="border-color:var(--border2);">
+        <div class="rel-box-title">Actions CRUD par phase</div>
+        <div class="rel-tag"><span class="crud crud-c" style="font-size:7px">C</span> BE — Créer Plan, Projet, Note</div>
+        <div class="rel-tag"><span class="crud crud-u" style="font-size:7px">U</span> BE — Réviser plan, corriger</div>
+        <div class="rel-tag"><span class="crud crud-d" style="font-size:7px">D</span> BE — Annuler plan refusé</div>
+        <div class="rel-tag"><span class="crud crud-c" style="font-size:7px">C</span> Prod — Ouvrir OF, affecter</div>
+        <div class="rel-tag"><span class="crud crud-u" style="font-size:7px">U</span> Prod — Modifier étapes OF</div>
+        <div class="rel-tag"><span class="crud crud-d" style="font-size:7px">D</span> Prod — Supprimer tâche inutile</div>
+        <div class="rel-tag"><span class="crud crud-c" style="font-size:7px">C</span> Liv — Créer BL, réception</div>
+        <div class="rel-tag"><span class="crud crud-u" style="font-size:7px">U</span> Liv — Modifier BL, réserves</div>
+        <div class="rel-tag"><span class="crud crud-d" style="font-size:7px">D</span> Liv — Annuler BL si avortement</div>
+      </div>
+
+      <!-- RELATIONS UML -->
+      <div class="relations-box">
+        <div class="rel-box-title">Relations UML</div>
+        <div class="rel-tag"><span class="rel-sym">▷</span> Plan → Charpente, Cabine</div>
+        <div class="rel-tag"><span class="rel-sym">▷</span> OF → FabCharpente, FabCabine</div>
+        <div class="rel-tag"><span class="rel-sym">▷</span> Equip → Sanit., Elec., Mob.</div>
+        <div class="rel-tag"><span class="rel-sym">▷</span> User → RespBE, ChefProd, etc.</div>
+        <div class="rel-tag"><span class="rel-sym">◆</span> Projet ◆→ Plan (1..*)</div>
+        <div class="rel-tag"><span class="rel-sym">◆</span> OF ◆→ AffectationTache</div>
+        <div class="rel-tag"><span class="rel-sym">◆</span> FabCabine ◆→ Menuiserie</div>
+        <div class="rel-tag"><span class="rel-sym">◇</span> FabCabine ◇→ Equipement</div>
+        <div class="rel-tag"><span class="rel-sym">→</span> Projet → OF → CQ → BL</div>
+        <div class="rel-tag"><span class="rel-sym">→</span> SignalFaute → Ouvrier(s)</div>
+        <div class="rel-tag"><span class="rel-sym">→</span> AlerteRetard → Responsable</div>
+      </div>
+
+    </div><!-- end right col B -->
+
+  </div><!-- end main grid -->
+
+  <!-- ══════════════════════ FOOTER ══════════════════════ -->
+  <div class="footer">
+    <div class="footer-left">
+      Diagramme Unifié — Construction Métallique · Charpentes &amp; Cabines Modulaires<br>
+      UML Class + Process Flow + Utilisateurs + Ouvriers + Alertes Retard + Signalement Fautes + CRUD · Created by AMH ·
+    </div>
+    <div class="footer-legend">
+      <div class="fl-item"><div class="fl-box" style="background:var(--purple-bg);border:1px solid var(--purple)"></div> Bureau d'étude</div>
+      <div class="fl-item"><div class="fl-box" style="background:var(--teal-bg);border:1px solid var(--teal)"></div> Production</div>
+      <div class="fl-item"><div class="fl-box" style="background:var(--amber-bg);border:1px solid var(--amber)"></div> Équipements</div>
+      <div class="fl-item"><div class="fl-box" style="background:var(--coral-bg);border:1px solid var(--coral)"></div> Livraison</div>
+      <div class="fl-item"><div class="fl-box" style="background:var(--red-bg);border:1px solid var(--red)"></div> Alertes</div>
+      <div class="fl-item"><div class="fl-box" style="background:var(--green-bg);border:1px solid var(--green)"></div> Ouvriers</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
